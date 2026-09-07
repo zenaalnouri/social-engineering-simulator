@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results - Social Engineering Simulator</title>
+  
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav>
+    <div class="logo">
+      <img src="../images/Blue_Modern_Security_Technology_Logo.png" alt="Logo" class="logo-img">
+      <span data-i18n="nav.simulator">Social Engineering Simulator</span>
+    </div>
+    
+    <ul class="nav-links">
+      <li><a href="../index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="./alerts.html" data-i18n="nav.alerts">Alerts</a></li>
+      <li><a href="../index.html#about" data-i18n="nav.about">About Us</a></li>
+    </ul>
+    
+    <div class="nav-controls">
+      <a class="btn btn-sm admin-nav" href="./admin.html" aria-label="Admin" title="Admin">👤</a>
+      <button class="toggle-btn" id="langToggle" title="Toggle Language">🌐</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container" style="padding-top: var(--space-2xl); padding-bottom: var(--space-2xl);">
+    <div id="resultsContainer">
+      <!-- This will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/language.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Latest Scam Alerts - Social Engineering Simulator</title>
+  
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav>
+    <div class="logo">
+      <img src="../images/Blue_Modern_Security_Technology_Logo.png" alt="Logo" class="logo-img">
+      <span data-i18n="nav.simulator">Social Engineering Simulator</span>
+    </div>
+    
+    <ul class="nav-links">
+      <li><a href="../index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="./alerts.html" class="active" data-i18n="nav.alerts">Alerts</a></li>
+      <li><a href="../index.html#about" data-i18n="nav.about">About Us</a></li>
+    </ul>
+    
+    <div class="nav-controls">
+      <a class="btn btn-sm admin-nav" href="./admin.html" aria-label="Admin" title="Admin">👤</a>
+      <button class="toggle-btn" id="langToggle" title="Toggle Language">🌐</button>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white; padding: var(--space-3xl) var(--space-lg); text-align: center;">
+    <div class="container">
+      <h1 data-i18n="alerts.title">Latest Scam Alerts</h1>
+      <p data-i18n="alerts.subtitle">Stay informed about the newest threats</p>
+    </div>
+  </section>
+
+  <!-- Alerts Grid -->
+  <section class="container py-3xl">
+    <div class="grid grid-2" id="alertsGrid">
+      <!-- Alert 1: Phishing Email -->
+      <div class="card alert-card" style="background: var(--light-pink); border-left: 4px solid var(--danger-color);">
+        <h4 style="color: var(--danger-color); margin-bottom: var(--space-md);">📧 Fake Bank Verification Email</h4>
+        <p style="color: var(--text-dark); margin-bottom: var(--space-md);">
+          Phishing emails claiming urgent account verification
+        </p>
+        <p style="font-size: var(--fs-sm); color: var(--text-gray);">
+          <strong>Red Flags:</strong> Suspicious links, urgent tone, requests for credentials
+        </p>
+      </div>
+      
+      <!-- Alert 2: Fake SMS -->
+      <div class="card alert-card" style="background: var(--light-orange); border-left: 4px solid var(--warning-color);">
+        <h4 style="color: #f6ad55; margin-bottom: var(--space-md);">📱 Fake Delivery SMS</h4>
+        <p style="color: var(--text-dark); margin-bottom: var(--space-md);">
+          Scammers impersonating delivery services
+        </p>
+        <p style="font-size: var(--fs-sm); color: var(--text-gray);">
+          <strong>Red Flags:</strong> Shortened URLs, unexpected messages, urgency
+        </p>
+      </div>
+      
+      <!-- Alert 3: Instagram Scam -->
+      <div class="card alert-card" style="background: var(--light-blue); border-left: 4px solid var(--info-color);">
+        <h4 style="color: var(--info-color); margin-bottom: var(--space-md);">📱 Instagram Account Scam</h4>
+        <p style="color: var(--text-dark); margin-bottom: var(--space-md);">
+          Fake messages threatening account deletion
+        </p>
+        <p style="font-size: var(--fs-sm); color: var(--text-gray);">
+          <strong>Red Flags:</strong> Account deletion threats, verification links, time pressure
+        </p>
+      </div>
+      
+      <!-- Alert 4: Fake Website -->
+      <div class="card alert-card" style="background: var(--light-purple); border-left: 4px solid var(--primary-color);">
+        <h4 style="color: var(--primary-color); margin-bottom: var(--space-md);">🌐 Fake Website</h4>
+        <p style="color: var(--text-dark); margin-bottom: var(--space-md);">
+          Fraudulent websites impersonating legitimate companies
+        </p>
+        <p style="font-size: var(--fs-sm); color: var(--text-gray);">
+          <strong>Red Flags:</strong> URL typos, poor design, payment requests
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security Tips Section -->
+  <section style="background: var(--bg-light); padding: var(--space-3xl) var(--space-lg);">
+    <div class="container">
+      <h2 class="text-center mb-2xl">How to Protect Yourself</h2>
+      
+      <div class="grid grid-3">
+        <div class="card text-center">
+          <div style="font-size: 2.5rem; margin-bottom: var(--space-md);">✓</div>
+          <h5>Verify Before Clicking</h5>
+          <p>Always verify links and sender information through official channels before taking action.</p>
+        </div>
+        
+        <div class="card text-center">
+          <div style="font-size: 2.5rem; margin-bottom: var(--space-md);">✓</div>
+          <h5>Enable 2FA</h5>
+          <p>Use two-factor authentication on all important accounts for added security.</p>
+        </div>
+        
+        <div class="card text-center">
+          <div style="font-size: 2.5rem; margin-bottom: var(--space-md);">✓</div>
+          <h5>Stay Updated</h5>
+          <p>Keep your software and systems updated with the latest security patches.</p>
+        </div>
+        
+        <div class="card text-center">
+          <div style="font-size: 2.5rem; margin-bottom: var(--space-md);">✓</div>
+          <h5>Report Scams</h5>
+          <p>Report suspicious emails, messages, and websites to relevant authorities.</p>
+        </div>
+        
+        <div class="card text-center">
+          <div style="font-size: 2.5rem; margin-bottom: var(--space-md);">✓</div>
+          <h5>Trust Your Instinct</h5>
+          <p>If something feels wrong, take a moment to verify before responding.</p>
+        </div>
+        
+        <div class="card text-center">
+          <div style="font-size: 2.5rem; margin-bottom: var(--space-md);">✓</div>
+          <h5>Never Share Credentials</h5>
+          <p>Legitimate organizations never ask for passwords via email or message.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="container text-center py-3xl">
+    <h2 class="mb-lg">Test Your Knowledge</h2>
+    <p class="mb-2xl" style="color: var(--text-gray);">
+      Now that you know the warning signs, test your ability to recognize these scams in real-world scenarios.
+    </p>
+    <a href="./simulation.html" class="btn btn-primary btn-lg">Start Simulation</a>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p data-i18n="about.copyright">© 2026 Social Engineering Simulator</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../js/language.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

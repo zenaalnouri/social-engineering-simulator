@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Social Engineering Simulator</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+  <style>
+    .admin-header { padding: var(--space-2xl) 0; }
+    .admin-toolbar { align-items: flex-end; gap: var(--space-md); padding: var(--space-lg) 0; border-bottom: 1px solid var(--border-color); }
+    .admin-heading { display: grid; gap: var(--space-xs); }
+    .admin-kicker { color: var(--info-color); font-size: var(--fs-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .admin-heading h1 { margin-bottom: 0; font-size: var(--fs-3xl); }
+    .admin-heading p { color: var(--text-gray); }
+    .admin-session-status { display: inline-flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-xs); padding: .45rem .75rem; border-radius: var(--radius-full); background: var(--light-green); color: #24613f; font-size: var(--fs-xs); font-weight: 600; }
+    .admin-session-status::before { content: ''; width: .45rem; height: .45rem; border-radius: 50%; background: var(--success-color); }
+    .admin-toolbar[hidden], #adminContent[hidden], #adminLoginPanel[hidden] { display: none !important; }
+    .admin-login { max-width: 480px; margin: var(--space-3xl) auto; padding: var(--space-2xl); box-shadow: var(--shadow-lg); }
+    .login-brand { display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl); color: var(--text-gray); font-size: var(--fs-sm); font-weight: 600; }
+    .login-mark { display: grid; place-items: center; width: 52px; height: 52px; border-radius: var(--radius-lg); background: #c2deff; color: #163b67; font-size: 1.5rem; }
+    .admin-login h2 { margin-bottom: var(--space-sm); font-size: var(--fs-3xl); }
+    .login-subtitle { margin-bottom: var(--space-xl); color: var(--text-gray); }
+    .admin-login-form { display: grid; gap: var(--space-lg); }
+    .login-field { display: grid; gap: var(--space-xs); color: var(--text-dark); font-size: var(--fs-sm); font-weight: 600; }
+    .login-field input { width: 100%; padding: .85rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--input-background); color: var(--text-dark); font: inherit; transition: border-color var(--transition-fast), box-shadow var(--transition-fast); }
+    .login-field input:focus { outline: none; border-color: var(--info-color); box-shadow: 0 0 0 3px rgba(66, 153, 225, .18); }
+    .password-wrap { position: relative; }
+    .password-wrap input { padding-inline-end: 3.25rem; }
+    .password-toggle { position: absolute; inset-inline-end: .5rem; top: 50%; transform: translateY(-50%); border: 0; background: transparent; color: var(--text-gray); cursor: pointer; padding: .5rem; }
+    .password-toggle:hover { color: var(--primary-color); }
+    .admin-login-submit { width: 100%; margin-top: var(--space-xs); }
+    .login-note { margin-top: var(--space-lg); color: var(--text-gray); font-size: var(--fs-xs); text-align: center; }
+    .admin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-lg); }
+    .admin-stat { padding: var(--space-lg); }
+    .admin-stat strong { display: block; font-size: 2rem; color: var(--primary-color); }
+    .admin-section { margin-top: var(--space-2xl); }
+    .admin-table-wrap { overflow-x: auto; }
+    .admin-table { width: 100%; border-collapse: collapse; text-align: start; }
+    .admin-table th, .admin-table td { padding: var(--space-md); border-bottom: 1px solid var(--border-color); vertical-align: top; }
+    .admin-table th { color: var(--text-gray); font-size: var(--fs-sm); }
+    .admin-table textarea { min-width: 220px; min-height: 70px; padding: .6rem; border: 1px solid var(--border-color); border-radius: 6px; }
+    .admin-table button { white-space: nowrap; }
+    .scenario-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+    .scenario-action { border: 0; border-radius: var(--radius-md); padding: .65rem .9rem; cursor: pointer; font: inherit; transition: transform var(--transition-fast), box-shadow var(--transition-fast); }
+    .scenario-action:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    .scenario-action-edit { background: #c2deff; color: #163b67; }
+    .scenario-action-delete { background: #ffdec0; color: #75451f; }
+    .admin-message { margin-top: var(--space-md); }
+    .admin-form { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-xl); }
+    .editor-column { display: grid; gap: var(--space-md); padding: var(--space-lg); background: var(--bg-light); border-radius: var(--radius-lg); }
+    .editor-column h3 { color: var(--primary-color); font-size: var(--fs-xl); }
+    .editor-column label, .correct-answer-field { display: grid; gap: var(--space-xs); color: var(--text-gray); font-size: var(--fs-sm); }
+    .admin-form input, .admin-form textarea { width: 100%; padding: var(--space-md); border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-white); }
+    .admin-form textarea { min-height: 80px; resize: vertical; }
+    .correct-answer-field { grid-column: 1 / -1; max-width: 360px; }
+    .admin-form-actions { display: flex; gap: var(--space-md); grid-column: 1 / -1; }
+    @media (max-width: 800px) { .admin-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 500px) { .admin-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 700px) { .admin-form { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">
+      <img src="../images/Blue_Modern_Security_Technology_Logo.png" alt="Logo" class="logo-img">
+      <span data-i18n="nav.simulator">Social Engineering Simulator</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="./alerts.html">Alerts</a></li>
+      <li><a href="../index.html#about">About Us</a></li>
+    </ul>
+    <div class="nav-controls"><button class="toggle-btn" id="langToggle" title="Toggle Language">🌐</button></div>
+  </nav>
+
+  <main class="container admin-header">
+    <section class="card admin-login" id="adminLoginPanel">
+      <div class="login-brand"><span class="login-mark">👤</span><span>Secure administration</span></div>
+      <h2>Welcome back</h2>
+      <p class="login-subtitle">Sign in to manage simulator scenarios and review results.</p>
+      <form id="adminLoginForm" class="admin-login-form">
+        <label class="login-field">Username
+          <input id="adminUsername" type="text" placeholder="Enter your username" required autocomplete="username">
+        </label>
+        <label class="login-field">Password
+          <span class="password-wrap">
+            <input id="adminPassword" type="password" placeholder="Enter your password" required autocomplete="current-password">
+            <button id="passwordToggle" class="password-toggle" type="button" aria-label="Show password" title="Show password">Show</button>
+          </span>
+        </label>
+        <button class="btn btn-primary admin-login-submit" type="submit">Sign in securely</button>
+      </form>
+      <p class="login-note">Authorized administrators only</p>
+    </section>
+    <div class="flex-between admin-toolbar" id="adminToolbar" hidden>
+      <div class="admin-heading"><span class="admin-kicker">Operations dashboard</span><h1 id="adminTitle">Admin Panel</h1><p id="adminSubtitle">Manage existing simulator data.</p></div>
+      <div class="flex gap-md">
+        <span class="admin-session-status">Secure session</span>
+        <button class="btn btn-light" id="refreshAdmin" type="button">Refresh</button>
+        <button class="btn btn-primary" id="logoutAdmin" type="button">Log out</button>
+      </div>
+    </div>
+    <div id="adminMessage" class="admin-message"></div>
+
+    <div id="adminContent" hidden>
+      <section class="admin-grid admin-section" id="adminStats"></section>
+
+    <section class="admin-section card">
+      <h2>Saved Results</h2>
+      <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>User</th><th>Score</th><th>Percentage</th><th>Level</th><th>Date</th></tr></thead><tbody id="resultsRows"></tbody></table></div>
+    </section>
+
+    <section class="admin-section card">
+      <h2>Scenario Editor</h2>
+      <form id="scenarioForm" class="admin-form">
+        <input id="scenarioId" type="hidden">
+        <div class="editor-column">
+          <h3>Arabic content</h3>
+          <label>العنوان<input data-scenario-field="title" required></label>
+          <label>الفئة<input data-scenario-field="category" required></label>
+          <label>الوصف<textarea data-scenario-field="description" required></textarea></label>
+          <label>الخيار A<input data-scenario-field="option1" required></label>
+          <label>الخيار B<input data-scenario-field="option2" required></label>
+          <label>الخيار C<input data-scenario-field="option3" required></label>
+          <label>الخيار D<input data-scenario-field="option4" required></label>
+          <label>الشرح<textarea data-scenario-field="explanation" required></textarea></label>
+          <label>مؤشرات الخطر<textarea data-scenario-field="warning_indicators"></textarea></label>
+        </div>
+        <div class="editor-column">
+          <h3>English content</h3>
+          <label>Title<input data-scenario-field="title_en" required></label>
+          <label>Category<input data-scenario-field="category_en" required></label>
+          <label>Description<textarea data-scenario-field="description_en" required></textarea></label>
+          <label>Option A<input data-scenario-field="option1_en" required></label>
+          <label>Option B<input data-scenario-field="option2_en" required></label>
+          <label>Option C<input data-scenario-field="option3_en" required></label>
+          <label>Option D<input data-scenario-field="option4_en" required></label>
+          <label>Explanation<textarea data-scenario-field="explanation_en" required></textarea></label>
+          <label>Warning indicators<textarea data-scenario-field="warning_indicators_en"></textarea></label>
+        </div>
+        <label class="correct-answer-field">Correct answer (A, B, C, or D)<input data-scenario-field="correct_answer" required></label>
+        <div class="admin-form-actions">
+          <button class="btn btn-primary" type="submit">Save Scenario</button>
+          <button class="btn btn-light" type="button" id="clearScenarioForm">New Scenario</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="admin-section card">
+      <h2>Scenarios</h2>
+      <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Options</th><th>Actions</th></tr></thead><tbody id="scenarioRows"></tbody></table></div>
+    </section>
+
+    <section class="admin-section card">
+      <h2>Scam Alerts</h2>
+      <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Arabic</th><th>English</th></tr></thead><tbody id="alertRows"></tbody></table></div>
+    </section>
+    </div>
+  </main>
+
+  <script src="../js/language.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

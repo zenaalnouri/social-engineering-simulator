@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - Social Engineering Simulator</title>
+  
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav>
+    <div class="logo">
+      <img src="../images/Blue_Modern_Security_Technology_Logo.png" alt="Logo" class="logo-img">
+      <span data-i18n="nav.simulator">Social Engineering Simulator</span>
+    </div>
+    
+    <ul class="nav-links">
+      <li><a href="../index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="./alerts.html" data-i18n="nav.alerts">Alerts</a></li>
+      <li><a href="../index.html#about" data-i18n="nav.about">About Us</a></li>
+    </ul>
+    
+    <div class="nav-controls">
+      <a class="btn btn-sm admin-nav" href="./admin.html" aria-label="Admin" title="Admin">👤</a>
+      <button class="toggle-btn" id="langToggle" title="Toggle Language">🌐</button>
+    </div>
+  </nav>
+
+  <!-- Page Header -->
+  <section style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); color: white; padding: var(--space-3xl) var(--space-lg); text-align: center;">
+    <div class="container">
+      <h1 data-i18n="about.title">About This Project</h1>
+    </div>
+  </section>
+
+  <!-- About Content -->
+  <div class="container py-3xl">
+    <div class="card mb-2xl">
+      <h3 class="mb-lg">What is Social Engineering Simulator?</h3>
+      <p style="font-size: var(--fs-lg); color: var(--text-dark); line-height: 1.8;">
+        Social Engineering Simulator is an educational platform designed to help individuals recognize and defend against social engineering attacks through realistic simulations and interactive learning. It provides a safe environment to practice identifying phishing emails, SMS scams, fake websites, and other common attack vectors.
+      </p>
+    </div>
+
+    <!-- Features Section -->
+    <div class="grid grid-2 mb-2xl">
+      <div class="card">
+        <h4 class="mb-lg">🎯 Interactive Simulations</h4>
+        <p>Face realistic social engineering scenarios in a safe, controlled environment. Each scenario is designed to test your awareness and decision-making skills.</p>
+      </div>
+      
+      <div class="card">
+        <h4 class="mb-lg">📊 Detailed Feedback</h4>
+        <p>After each scenario, receive comprehensive explanations of the attack, why your choice was correct or incorrect, and practical tips for protection.</p>
+      </div>
+      
+      <div class="card">
+        <h4 class="mb-lg">📈 Progress Tracking</h4>
+        <p>Monitor your cybersecurity awareness level with detailed scoring and an awareness assessment that helps you identify areas for improvement.</p>
+      </div>
+      
+      <div class="card">
+        <h4 class="mb-lg">🛡️ Real-World Threats</h4>
+        <p>Learn about current threat landscape including phishing, SMS scams, fake websites, baiting attacks, and pretexting techniques used by attackers.</p>
+      </div>
+    </div>
+
+    <!-- Project Details -->
+    <div class="card mb-2xl" style="background: var(--light-purple); border-left: 4px solid var(--primary-color);">
+      <h3 class="mb-lg">Project Information</h3>
+      
+      <div class="mb-lg">
+        <h5 style="color: var(--primary-color); margin-bottom: var(--space-sm);">Technology Stack</h5>
+        <p>Built with modern web technologies:</p>
+        <ul style="list-style: none; padding-left: 0;">
+          <li>✓ HTML5 for semantic markup</li>
+          <li>✓ CSS3 with Flexbox and Grid for responsive design</li>
+          <li>✓ Vanilla JavaScript for interactive functionality</li>
+          <li>✓ Fetch API for backend integration</li>
+        </ul>
+      </div>
+      
+      <div class="mb-lg">
+        <h5 style="color: var(--primary-color); margin-bottom: var(--space-sm);">Objectives</h5>
+        <p>This project aims to:</p>
+        <ul style="list-style: none; padding-left: 0;">
+          <li>✓ Increase awareness of social engineering threats</li>
+          <li>✓ Provide interactive cybersecurity training</li>
+          <li>✓ Build critical thinking in security decisions</li>
+          <li>✓ Create an engaging learning experience</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="card text-center mb-2xl">
+      <h3 class="mb-lg">👥 Who We Are</h3>
+      <p style="font-size: var(--fs-lg); color: var(--text-dark); margin-bottom: var(--space-lg);">
+        Developed by cybersecurity students passionate about making the digital world safer. We believe that awareness and education are the first lines of defense against cyber threats.
+      </p>
+      
+      <div class="grid grid-3 mt-lg">
+        <div>
+          <div style="font-size: 2rem; margin-bottom: var(--space-sm);">👨‍💻</div>
+          <h6>Frontend Development</h6>
+          <p style="color: var(--text-gray); font-size: var(--fs-sm);">UI/UX Design & HTML/CSS/JavaScript</p>
+        </div>
+        
+        <div>
+          <div style="font-size: 2rem; margin-bottom: var(--space-sm);">🔧</div>
+          <h6>Backend Development</h6>
+          <p style="color: var(--text-gray); font-size: var(--fs-sm);">API Development & Data Management</p>
+        </div>
+        
+        <div>
+          <div style="font-size: 2rem; margin-bottom: var(--space-sm);">📋</div>
+          <h6>Content Creation</h6>
+          <p style="color: var(--text-gray); font-size: var(--fs-sm);">Scenario Design & Security Research</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Getting Started -->
+    <div class="card" style="background: linear-gradient(135deg, var(--light-blue) 0%, var(--light-purple) 100%);">
+      <h3 class="mb-lg text-center">Ready to Get Started?</h3>
+      
+      <div class="grid grid-3 gap-lg">
+        <div class="text-center">
+          <div style="font-size: 2rem; margin-bottom: var(--space-md);">1️⃣</div>
+          <h6>Read Alerts</h6>
+          <p style="font-size: var(--fs-sm); color: var(--text-gray);">Check out the latest scam alerts page to learn about current threats.</p>
+        </div>
+        
+        <div class="text-center">
+          <div style="font-size: 2rem; margin-bottom: var(--space-md);">2️⃣</div>
+          <h6>Start Simulation</h6>
+          <p style="font-size: var(--fs-sm); color: var(--text-gray);">Begin the interactive simulation to test your security knowledge.</p>
+        </div>
+        
+        <div class="text-center">
+          <div style="font-size: 2rem; margin-bottom: var(--space-md);">3️⃣</div>
+          <h6>Improve Skills</h6>
+          <p style="font-size: var(--fs-sm); color: var(--text-gray);">Review feedback and improve your cybersecurity awareness level.</p>
+        </div>
+      </div>
+      
+      <div class="text-center mt-2xl">
+        <a href="./simulation.html" class="btn btn-primary btn-lg">Start Simulation</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Section -->
+  <section style="background: var(--bg-light); padding: var(--space-3xl) var(--space-lg);">
+    <div class="container text-center">
+      <h2 class="mb-lg">Questions or Feedback?</h2>
+      <p style="color: var(--text-gray); margin-bottom: var(--space-lg);">
+        We'd love to hear from you. Feel free to reach out with any questions, suggestions, or feedback about the simulator.
+      </p>
+      <p style="color: var(--text-gray);">
+        <strong>Email:</strong> contact@socialsecuritysimulator.com<br>
+        <strong>GitHub:</strong> github.com/security-simulator
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p data-i18n="about.copyright">© 2026 Social Engineering Simulator</p>
+    <p style="color: rgba(255,255,255,0.8); font-size: var(--fs-sm); margin-top: var(--space-md);">
+      Made with ❤️ by cybersecurity students
+    </p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../js/language.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

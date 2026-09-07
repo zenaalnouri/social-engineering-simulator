@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Begin Simulation - Social Engineering Simulator</title>
+  
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav>
+    <div class="logo">
+      <img src="../images/Blue_Modern_Security_Technology_Logo.png" alt="Logo" class="logo-img">
+      <span data-i18n="nav.simulator">Social Engineering Simulator</span>
+    </div>
+    
+    <ul class="nav-links">
+      <li><a href="../index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="./alerts.html" data-i18n="nav.alerts">Alerts</a></li>
+      <li><a href="../index.html#about" data-i18n="nav.about">About Us</a></li>
+    </ul>
+    
+    <div class="nav-controls">
+      <a class="btn btn-sm admin-nav" href="./admin.html" aria-label="Admin" title="Admin">👤</a>
+      <button class="toggle-btn" id="langToggle" title="Toggle Language">🌐</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <section class="hero" style="min-height: 40vh; justify-content: center; align-items: center; padding: var(--space-lg); background: radial-gradient(circle at top right, rgba(235,232,245,0.85), transparent 18%), radial-gradient(circle at bottom left, rgba(235,232,245,0.55), transparent 20%), var(--background);">
+    <div class="container" style="max-width: 550px; width: 100%;">
+      <div class="card" style="
+        background: var(--card);
+        border: none;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        padding: var(--space-2xl) var(--space-xl);
+        border-radius: var(--radius-xl);
+      ">
+        <div class="text-center mb-2xl">
+          <img src="../images/Blue_Modern_Security_Technology_Logo.png" alt="Logo" style="
+            display: block;
+            margin: 0 auto var(--space-2xl);
+            width: 72px;
+            max-width: 100%;
+          ">
+          <h2 data-i18n="simulation.title" style="
+            font-size: var(--fs-3xl);
+            color: var(--foreground);
+            font-weight: 600;
+            margin-bottom: var(--space-lg);
+          ">Begin Your Journey</h2>
+          <p data-i18n="simulation.subtitle" style="
+            color: var(--text-gray);
+            font-size: var(--fs-base);
+            margin: 0;
+          ">Enter your name to start the cybersecurity awareness simulation</p>
+        </div>
+        
+        <!-- Form -->
+        <div class="form-group mb-2xl">
+          <label for="nameInput" data-i18n="simulation.name" style="
+            display: block;
+            font-weight: 500;
+            color: var(--foreground);
+            margin-bottom: var(--space-md);
+            font-size: var(--fs-base);
+          ">Your Name</label>
+          <input
+            type="text"
+            id="nameInput"
+            class="form-input"
+            data-i18n="simulation.namePlaceholder"
+            placeholder="Enter your name"
+            autocomplete="off"
+            style="
+              width: 100%;
+              padding: var(--space-md) var(--space-lg);
+              background: var(--input-background);
+              border: 1px solid var(--border);
+              border-radius: var(--radius-lg);
+              font-family: 'Poppins', sans-serif;
+              font-size: var(--fs-base);
+              color: var(--foreground);
+              transition: all var(--transition-base);
+            "
+          >
+        </div>
+        
+        <!-- Start Button -->
+        <button
+          class="btn btn-primary"
+          id="startBtn"
+          disabled
+          style="
+            width: 100%;
+            color: var(--primary-foreground);
+            padding: var(--space-lg) var(--space-xl);
+            font-size: var(--fs-base);
+            font-weight: 500;
+            border-radius: var(--radius-xl);
+            margin-bottom: var(--space-lg);
+          "
+        >
+          <span>✨</span>
+          <span data-i18n="simulation.startBtn">Start Simulation</span>
+        </button>
+        
+        <!-- Hint -->
+        <div style="
+          background: var(--secondary);
+          border-radius: var(--radius-lg);
+          padding: var(--space-lg);
+          color: var(--foreground);
+          font-size: var(--fs-sm);
+          text-align: center;
+          margin-bottom: var(--space-2xl);
+        ">
+          <p data-i18n="simulation.hint" style="margin: 0; color: var(--text-gray);">You'll face 5 random scenarios designed to test your awareness</p>
+        </div>
+        
+      </div>
+      <div class="text-center" style="margin-top: var(--space-lg);">
+        <a href="../index.html" data-i18n="simulation.back" style="
+          color: var(--text-gray);
+          font-size: var(--fs-sm);
+          text-decoration: none;
+          transition: color var(--transition-base);
+        ">← Back to home</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scripts -->
+  <script src="../js/language.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

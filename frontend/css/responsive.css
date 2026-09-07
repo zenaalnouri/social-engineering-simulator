@@ -1,0 +1,445 @@
+/* 
+   Social Engineering Simulator - Responsive Design
+   ================================================== */
+
+/* Mobile First Approach - Base styles already in style.css */
+
+/* Small Devices (phones) - 320px to 480px */
+@media (max-width: 480px) {
+  /* Typography */
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  h4 { font-size: 1.125rem; }
+  
+  /* Container */
+  .container {
+    padding: 0 1rem;
+  }
+  
+  /* Navigation */
+  nav {
+    padding: 0.75rem 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .logo {
+    font-size: 1.25rem;
+  }
+  
+  .nav-links {
+    gap: 1rem;
+    font-size: 0.875rem;
+    flex-wrap: wrap;
+  }
+  
+  .nav-links a {
+    display: inline-flex;
+  }
+  
+  .nav-links a.active {
+    display: inline-flex;
+  }
+  
+  /* Hero Section */
+  .hero {
+    padding: 2rem 1rem;
+    min-height: 400px;
+  }
+  
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .hero h1 {
+    font-size: 2rem;
+  }
+  
+  .hero p {
+    font-size: 1rem;
+  }
+  
+  /* Buttons */
+  .btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    width: 100%;
+  }
+  
+  .btn-lg {
+    padding: 1rem 1.5rem;
+  }
+  
+  /* Cards */
+  .card {
+    padding: 1.25rem;
+  }
+  
+  /* Grid */
+  .grid-2, .grid-3, .grid-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Form Inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 1rem; /* Prevents zoom on iOS */
+  }
+  
+  /* Options Container */
+  .option-btn {
+    padding: 1rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Badge */
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.375rem 0.75rem;
+  }
+  
+  /* Icon Circle */
+  .icon-circle {
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+  }
+  
+  /* Score Display */
+  .score-number {
+    font-size: 2.5rem;
+  }
+  
+  /* Float Elements */
+  .float-element.small { width: 30px; height: 30px; }
+  .float-element.medium { width: 60px; height: 60px; }
+  .float-element.large { width: 90px; height: 90px; }
+  
+  /* Footer */
+  footer {
+    padding: 1.5rem 1rem;
+  }
+  
+  /* Flexbox Adjustments */
+  .flex {
+    flex-direction: column;
+  }
+  
+  .flex-between {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  /* Text Alignment */
+  body.ar .nav-links a {
+    text-align: left;
+  }
+}
+
+/* Medium Devices (tablets) - 481px to 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  /* Typography */
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.5rem; }
+  
+  /* Container */
+  .container {
+    padding: 0 1.5rem;
+  }
+  
+  /* Navigation */
+  nav {
+    padding: 1rem 1.5rem;
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+  }
+  
+  .nav-links {
+    gap: 1.5rem;
+  }
+  
+  .nav-links a {
+    font-size: 0.95rem;
+  }
+  
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Hero Section */
+  .hero {
+    padding: 3rem 1.5rem;
+    min-height: 450px;
+  }
+  
+  .hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .hero p {
+    font-size: 1.125rem;
+  }
+  
+  /* Buttons */
+  .btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  /* Cards */
+  .card {
+    padding: 1.5rem;
+  }
+  
+  /* Grid */
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  
+  /* Icon Circle */
+  .icon-circle {
+    width: 70px;
+    height: 70px;
+    font-size: 35px;
+  }
+  
+  /* Score Display */
+  .score-number {
+    font-size: 3rem;
+  }
+  
+  /* Leaderboard adjustments */
+  .leaderboard-item {
+    padding: 0.75rem;
+  }
+}
+
+/* Large Devices (desktops) - 769px to 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Navigation */
+  nav {
+    padding: 1.25rem 2rem;
+  }
+  
+  .nav-links {
+    gap: 2rem;
+  }
+  
+  /* Hero Section */
+  .hero {
+    padding: 4rem 2rem;
+  }
+  
+  /* Container */
+  .container {
+    padding: 0 2rem;
+  }
+  
+  /* Grid */
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(3, 1fr); }
+  
+  /* Cards */
+  .card {
+    padding: 1.75rem;
+  }
+}
+
+/* Use single-column hero layout when the viewport narrows below 960px */
+@media (max-width: 960px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Extra Large Devices (large desktops) - 1025px and up */
+@media (min-width: 1025px) {
+  /* Main container max-width optimization */
+  .container {
+    padding: 0 2rem;
+  }
+  
+  /* Grid layouts on desktop */
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  
+  /* Hero adjustments */
+  .hero {
+    padding: 5rem 2rem;
+    min-height: 600px;
+  }
+  
+  /* Cards hover effects become more pronounced */
+  .card {
+    padding: 2rem;
+  }
+  
+  .card:hover {
+    transform: translateY(-6px);
+  }
+  
+  .alert-card:hover {
+    box-shadow: var(--shadow-xl);
+  }
+  
+  /* Navigation stick effect for large screens */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+}
+
+/* Landscape Mode */
+@media (max-height: 500px) {
+  .hero {
+    min-height: 300px;
+    padding: 2rem 1rem;
+  }
+  
+  .hero h1 {
+    font-size: 1.875rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .hero p {
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+  
+  .float-element {
+    opacity: 0.05;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Increase touch target size */
+  .btn {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  .toggle-btn {
+    width: 48px;
+    height: 48px;
+  }
+  
+  /* Remove hover effects on touch devices (use active instead) */
+  .btn:active {
+    transform: translateY(-2px);
+  }
+  
+  .card {
+    box-shadow: var(--shadow-md);
+  }
+  
+  .card:active {
+    transform: translateY(-2px);
+  }
+  
+  /* Reduce animation complexity */
+  * {
+    animation-duration: 0.2s;
+  }
+}
+
+/* Print Styles */
+@media print {
+  nav,
+  footer,
+  .btn-close,
+  .toggle-btn {
+    display: none;
+  }
+  
+  body {
+    background-color: white;
+  }
+  
+  .card {
+    page-break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  a {
+    text-decoration: underline;
+  }
+}
+
+/* Prefers Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Dark Mode Support (Future Enhancement) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-light: #1a202c;
+    --bg-white: #2d3748;
+    --text-dark: #f7fafc;
+    --text-gray: #cbd5e0;
+    --border-color: #4a5568;
+  }
+  
+  body {
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  textarea,
+  select {
+    background-color: var(--bg-white);
+    color: var(--text-dark);
+  }
+  
+  nav {
+    background-color: var(--bg-white);
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .card {
+    background-color: var(--bg-white);
+    border-color: var(--border-color);
+  }
+  
+  .btn-secondary {
+    background-color: var(--bg-light);
+  }
+}
+
+/* Orientation Fixes */
+@media (orientation: portrait) {
+  body {
+    width: 100vw;
+    max-width: 100%;
+  }
+}
+
+@media (orientation: landscape) {
+  nav {
+    padding: 0.5rem 1rem;
+  }
+  
+  .hero {
+    min-height: auto;
+    padding: 2rem 1rem;
+  }
+}
