@@ -1,7 +1,7 @@
 // API access for the simulator frontend.
 
 class APIManager {
-  constructor(baseURL = 'http://localhost:5000') {
+  constructor(baseURL = window.location.origin) {
     this.baseURL = baseURL;
     this.timeout = 10000; // 10 seconds timeout
   }

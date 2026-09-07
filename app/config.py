@@ -23,16 +23,22 @@ BASEDIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
 
+def _database_uri():
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url and database_url.startswith("postgres://"):
+        return "postgresql://" + database_url[len("postgres://"):]
+    return database_url or f"sqlite:///{os.path.join(BASEDIR, 'instance', 'app.db')}"
+
+
 class Config:
     """Base configuration shared by all environments."""
 
     SECRET_KEY = os.environ.get(
         "SECRET_KEY", "dev-secret-key-change-in-production")
 
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        "DATABASE_URL", f"sqlite:///{os.path.join(BASEDIR, 'app.db')}"
-    )
+    SQLALCHEMY_DATABASE_URI = _database_uri()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*")
 
     # Flask-RESTX settings
     RESTX_MASK_SWAGGER = False  # don't hide fields with X-Fields masking in Swagger UI
@@ -53,6 +59,7 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
+    SESSION_COOKIE_SECURE = True
 
 
 config_map = {

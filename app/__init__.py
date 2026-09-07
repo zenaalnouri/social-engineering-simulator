@@ -35,6 +35,8 @@ def create_app(config_name=None):
 
     config_name = config_name or os.environ.get("FLASK_ENV", "development")
     app.config.from_object(config_map.get(config_name, config_map["default"]))
+    if config_name == "production" and not os.environ.get("SECRET_KEY"):
+        raise RuntimeError("SECRET_KEY must be set when FLASK_ENV=production")
 
     @app.before_request
     def require_admin_login():
@@ -49,7 +51,7 @@ def create_app(config_name=None):
     # --- Extensions ---
     db.init_app(app)
     migrate.init_app(app, db)
-    cors.init_app(app)
+    cors.init_app(app, origins=app.config["CORS_ORIGINS"])
     api.init_app(app)
 
     # Import models so Flask-Migrate can detect the schema
