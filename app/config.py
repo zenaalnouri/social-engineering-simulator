@@ -20,6 +20,8 @@ ADMIN_NAMES = frozenset(ADMIN_PASSWORDS)
 
 # Project root = one directory above /app
 BASEDIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+INSTANCE_DIR = os.path.join(BASEDIR, "instance")
+os.makedirs(INSTANCE_DIR, exist_ok=True)
 load_dotenv(os.path.join(BASEDIR, ".env"))
 
 
@@ -27,7 +29,7 @@ def _database_uri():
     database_url = os.environ.get("DATABASE_URL")
     if database_url and database_url.startswith("postgres://"):
         return "postgresql://" + database_url[len("postgres://"):]
-    return database_url or f"sqlite:///{os.path.join(BASEDIR, 'instance', 'app.db')}"
+    return database_url or f"sqlite:///{os.path.join(INSTANCE_DIR, 'app.db')}"
 
 
 class Config:
