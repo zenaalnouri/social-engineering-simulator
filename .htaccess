@@ -1,0 +1,8 @@
+Options +ExecCGI
+
+RewriteEngine On
+RewriteBase /
+
+RewriteRule ^(?:\.env|\.git(?:/|$)|\.venv(?:/|$)|venv(?:/|$)|env(?:/|$)|instance(?:/|$)|__pycache__(?:/|$)|.*\.(?:pyc|pyo|db|sqlite|sqlite3))$ - [F,L,NC]
+RewriteRule ^flask\.wsgi(?:/.*)?$ - [L]
+RewriteRule ^(.*)$ flask.wsgi/$1 [QSA,PT,L]
