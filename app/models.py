@@ -151,6 +151,10 @@ class Scenario(db.Model):
     questions = db.relationship(
         "Question", backref="scenario", lazy=True, cascade="all, delete-orphan"
     )
+    state = db.relationship(
+        "ScenarioState", backref="scenario", uselist=False,
+        cascade="all, delete-orphan"
+    )
 
     @property
     def success_rate(self):
@@ -236,6 +240,17 @@ class Question(db.Model):
         return data
 
 
+class ScenarioState(db.Model):
+    """Application-owned state for scenarios from the supplied database."""
+
+    __tablename__ = "scenario_states"
+
+    scenario_id = db.Column(
+        db.Integer, db.ForeignKey("Scenarios.id"), primary_key=True
+    )
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
+
+
 class SimulationAttempt(db.Model):
     __tablename__ = "simulation_attempts"
 
@@ -251,6 +266,7 @@ class SimulationAttempt(db.Model):
 
     status = db.Column(db.String(20), nullable=False,
                        default=STATUS_IN_PROGRESS)
+    language = db.Column(db.String(2), nullable=False, default="ar")
     total_questions = db.Column(db.Integer, nullable=False, default=5)
 
     score = db.Column(db.Integer, nullable=True)

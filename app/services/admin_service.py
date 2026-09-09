@@ -7,6 +7,7 @@ from app.models import (
     Question,
     Result,
     Scenario,
+    ScenarioState,
 )
 from app.utils.exceptions import NotFoundError, ValidationError
 from app.utils.validators import validate_answer_choice, validate_non_empty_string
@@ -20,7 +21,11 @@ def _get_scenario_or_404(scenario_id):
 
 
 def list_scenarios(include_inactive=True):
-    return Scenario.query.order_by(Scenario.id).all()
+    query = Scenario.query
+    if not include_inactive:
+        query = query.join(ScenarioState).filter(
+            ScenarioState.is_active.is_(True))
+    return query.order_by(Scenario.id).all()
 
 
 def _scenario_text(payload, field, fallback=None):
@@ -60,6 +65,7 @@ def create_scenario(payload):
     )
     db.session.add(scenario)
     db.session.commit()
+    db.session.add(ScenarioState(scenario_id=scenario.id))
     db.session.add(Question(
         scenario_id=scenario.id,
         question=scenario.description,
@@ -112,7 +118,11 @@ def delete_scenario(scenario_id):
 
 def set_scenario_active(scenario_id, is_active):
     scenario = _get_scenario_or_404(scenario_id)
-    scenario.is_active = is_active
+    state = scenario.state
+    if state is None:
+        state = ScenarioState(scenario_id=scenario.id)
+        db.session.add(state)
+    state.is_active = is_active
     db.session.commit()
     return scenario
 

@@ -9,6 +9,7 @@ returns a ready-to-run Flask app.
 import os
 
 from flask import Flask, jsonify, request, send_from_directory, session
+from sqlalchemy import inspect, text
 
 from app.config import ADMIN_PASSWORDS, config_map
 from app.extensions import db, migrate, cors, api
@@ -61,6 +62,25 @@ def create_app(config_name=None):
     # the internal simulation tables that are not part of that file.
     with app.app_context():
         db.create_all()
+        inspector = inspect(db.engine)
+        attempt_columns = {
+            column["name"]
+            for column in inspector.get_columns("simulation_attempts")
+        }
+        if "language" not in attempt_columns:
+            db.session.execute(
+                text(
+                    "ALTER TABLE simulation_attempts "
+                    "ADD COLUMN language VARCHAR(2) NOT NULL DEFAULT 'ar'"
+                )
+            )
+            db.session.commit()
+
+        for scenario in models.Scenario.query.all():
+            if scenario.state is None:
+                db.session.add(models.ScenarioState(scenario_id=scenario.id))
+        db.session.commit()
+
         for scenario in models.Scenario.query.all():
             if not scenario.questions:
                 correct_answer = {
