@@ -44,6 +44,7 @@ def scenario_admin_data(scenario):
         "option4_en": scenario.option4_en or scenario.option4,
         "explanation_en": scenario.explanation_en or scenario.explanation,
         "warning_indicators_en": scenario.warning_indicators_en or "",
+        "is_active": scenario.is_active,
         "options": {
             "A": scenario.option1,
             "B": scenario.option2,
@@ -155,7 +156,8 @@ question_model = ns.model(
         "option_a": fields.String(required=True),
         "option_b": fields.String(required=True),
         "option_c": fields.String(required=True),
-        "correct_answer": fields.String(required=True, description="A | B | C"),
+        "option_d": fields.String(required=True),
+        "correct_answer": fields.String(required=True, description="A | B | C | D"),
     },
 )
 

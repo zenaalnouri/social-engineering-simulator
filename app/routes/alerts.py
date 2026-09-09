@@ -15,9 +15,9 @@ ns = Namespace("alerts", description="Database-backed scam alerts")
 @ns.route("")
 class AlertsResource(Resource):
     def get(self):
-        language = request.args.get("lang", "ar")
+        language = request.args.get("lang", "en")
         if language not in ("ar", "en"):
-            language = "ar"
+            language = "en"
         alerts = ScamAlert.query.order_by(ScamAlert.id).all()
         rotation = int(time.time() // (2 * 60 * 60))
         random.Random(rotation).shuffle(alerts)

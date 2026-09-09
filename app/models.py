@@ -143,10 +143,28 @@ class Scenario(db.Model):
     content = property(lambda self: self.description, lambda self,
                        value: setattr(self, "description", value))
     difficulty = property(lambda self: "medium", lambda self, value: None)
-    is_active = property(lambda self: True, lambda self, value: None)
-    total_attempts = property(lambda self: 0, lambda self, value: None)
-    correct_answers = property(lambda self: 0, lambda self, value: None)
-    incorrect_answers = property(lambda self: 0, lambda self, value: None)
+
+    @property
+    def is_active(self):
+        # Activation state is kept in the application-owned ScenarioState
+        # table because the supplied Scenarios table has no active column.
+        return self.state.is_active if self.state is not None else True
+
+    @property
+    def total_attempts(self):
+        return AttemptAnswer.query.filter_by(scenario_id=self.id).count()
+
+    @property
+    def correct_answers(self):
+        return AttemptAnswer.query.filter_by(
+            scenario_id=self.id, is_correct=True
+        ).count()
+
+    @property
+    def incorrect_answers(self):
+        return AttemptAnswer.query.filter_by(
+            scenario_id=self.id, is_correct=False
+        ).count()
 
     questions = db.relationship(
         "Question", backref="scenario", lazy=True, cascade="all, delete-orphan"
@@ -218,9 +236,9 @@ class Question(db.Model):
     option_a = db.Column(db.String(255), nullable=False)
     option_b = db.Column(db.String(255), nullable=False)
     option_c = db.Column(db.String(255), nullable=False)
-    option_d = db.Column(db.String(255), nullable=True)
+    option_d = db.Column(db.String(255), nullable=False)
     correct_answer = db.Column(
-        db.String(1), nullable=False)  # 'A', 'B', or 'C'
+        db.String(1), nullable=False)  # 'A', 'B', 'C', or 'D'
 
     created_at = db.Column(
         db.DateTime, default=datetime.utcnow, nullable=False)
