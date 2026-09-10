@@ -29,7 +29,8 @@ def _database_uri():
     database_url = os.environ.get("DATABASE_URL")
     if database_url and database_url.startswith("postgres://"):
         return "postgresql://" + database_url[len("postgres://"):]
-    return database_url or f"sqlite:///{os.path.join(INSTANCE_DIR, 'app.db')}"
+    # تم تعديل اسم ملف قاعدة البيانات بالأسفل ليكون database.db بدلاً من app.db ليطابق ملفك الأصلي المخزن داخل مجلد instance
+    return database_url or f"sqlite:///{os.path.join(INSTANCE_DIR, 'database.db')}"
 
 
 class Config:
