@@ -55,7 +55,11 @@ class StartSimulationResource(Resource):
 
         attempt, scenarios = simulation_service.start_simulation(
             user_id, language)
-        data = {"attempt": attempt.to_dict(), "scenarios": scenarios}
+        data = {
+            "session_id": attempt.id,
+            "attempt": attempt.to_dict(),
+            "scenarios": scenarios,
+        }
         return success_response(data=data, message="Simulation started", status_code=201)
 
 
@@ -69,21 +73,17 @@ class SubmitAnswerResource(Resource):
     def post(self):
         """Submit an answer for one scenario within an in-progress simulation attempt."""
         payload = request.get_json(silent=True) or {}
-        attempt_id = payload.get("attempt_id")
+        attempt_id = payload.get("attempt_id", payload.get("session_id"))
         scenario_id = payload.get("scenario_id")
-        selected_answer = payload.get("selected_answer")
-        language = payload.get("language", "ar")
+        selected_answer = payload.get("selected_answer", payload.get("answer"))
 
         if not isinstance(attempt_id, int) or not isinstance(scenario_id, int):
             raise ValidationError(
                 "'attempt_id' and 'scenario_id' must be integers")
 
-        if language not in ("ar", "en"):
-            language = "ar"
-
         answer = simulation_service.submit_answer(
-            attempt_id, scenario_id, selected_answer, language)
-        is_english = language == "en"
+            attempt_id, scenario_id, selected_answer)
+        is_english = answer.attempt.language == "en"
         explanation = (
             answer.scenario.explanation_en
             if is_english and answer.scenario.explanation_en
@@ -123,7 +123,7 @@ class FinishSimulationResource(Resource):
     def post(self):
         """Finish a simulation attempt: calculates score, percentage, and awareness level."""
         payload = request.get_json(silent=True) or {}
-        attempt_id = payload.get("attempt_id")
+        attempt_id = payload.get("attempt_id", payload.get("session_id"))
         if not isinstance(attempt_id, int):
             raise ValidationError("'attempt_id' must be an integer")
 

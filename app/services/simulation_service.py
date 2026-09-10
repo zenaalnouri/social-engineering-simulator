@@ -20,6 +20,7 @@ from app.models import (
     AttemptScenario,
     AttemptAnswer,
     Result,
+    ScenarioState,
 )
 from app.utils.exceptions import ValidationError, NotFoundError, ConflictError
 from app.utils.validators import validate_answer_choice
@@ -57,7 +58,12 @@ def start_simulation(user_id, language="ar"):
     Returns (attempt, scenario_payload) where scenario_payload is a
     list of dicts safe to send to the client (no correct answers).
     """
-    available_scenarios = Scenario.query.order_by(Scenario.id).all()
+    available_scenarios = (
+        Scenario.query.join(ScenarioState)
+        .filter(ScenarioState.is_active.is_(True))
+        .order_by(Scenario.id)
+        .all()
+    )
     eligible = [
         scenario for scenario in available_scenarios if scenario.questions]
 
@@ -72,6 +78,7 @@ def start_simulation(user_id, language="ar"):
     attempt = SimulationAttempt(
         user_id=user_id,
         status=SimulationAttempt.STATUS_IN_PROGRESS,
+        language=language,
         total_questions=SCENARIOS_PER_SIMULATION,
     )
     db.session.add(attempt)
@@ -107,7 +114,7 @@ def start_simulation(user_id, language="ar"):
     return attempt, scenario_payload
 
 
-def submit_answer(attempt_id, scenario_id, selected_answer, language="ar"):
+def submit_answer(attempt_id, scenario_id, selected_answer):
     """Validate and record one answer within an in-progress attempt."""
     attempt = _get_attempt_or_404(attempt_id)
 
