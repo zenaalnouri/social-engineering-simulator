@@ -150,6 +150,7 @@ def create_question(payload):
     option_a = validate_non_empty_string(payload.get("option_a"), "option_a")
     option_b = validate_non_empty_string(payload.get("option_b"), "option_b")
     option_c = validate_non_empty_string(payload.get("option_c"), "option_c")
+    option_d = validate_non_empty_string(payload.get("option_d"), "option_d")
     correct_answer = validate_answer_choice(payload.get("correct_answer"))
 
     question = Question(
@@ -158,6 +159,7 @@ def create_question(payload):
         option_a=option_a,
         option_b=option_b,
         option_c=option_c,
+        option_d=option_d,
         correct_answer=correct_answer,
     )
     db.session.add(question)
@@ -180,6 +182,9 @@ def update_question(question_id, payload):
     if "option_c" in payload:
         question.option_c = validate_non_empty_string(
             payload["option_c"], "option_c")
+    if "option_d" in payload:
+        question.option_d = validate_non_empty_string(
+            payload["option_d"], "option_d")
     if "correct_answer" in payload:
         question.correct_answer = validate_answer_choice(
             payload["correct_answer"])

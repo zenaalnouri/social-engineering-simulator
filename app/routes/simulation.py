@@ -44,11 +44,11 @@ class StartSimulationResource(Resource):
         """Start a new simulation: randomly assigns 5 active scenarios to the user."""
         payload = request.get_json(silent=True) or {}
         user_id = payload.get("user_id")
-        language = payload.get("language", "ar")
+        language = payload.get("language", "en")
         if not isinstance(user_id, int):
             raise ValidationError("'user_id' must be an integer")
         if language not in ("ar", "en"):
-            language = "ar"
+            language = "en"
 
         if not User.query.get(user_id):
             raise NotFoundError("User not found")
@@ -95,6 +95,17 @@ class SubmitAnswerResource(Resource):
             else answer.scenario.warning_indicators
         )
         data = answer.to_dict()
+        arabic_flags = (
+            answer.scenario.warning_indicators.split("•")
+            if answer.scenario.warning_indicators
+            else []
+        )
+        english_flags = (
+            answer.scenario.warning_indicators_en.split("•")
+            if answer.scenario.warning_indicators_en
+            else []
+        )
+
         data.update(
             {
                 "explanation": explanation,
@@ -107,6 +118,18 @@ class SubmitAnswerResource(Resource):
                     answer.scenario.category_en
                     if is_english and answer.scenario.category_en
                     else answer.scenario.category
+                ),
+                "explanation_ar": answer.scenario.explanation,
+                "explanation_en": (
+                    answer.scenario.explanation_en
+                    or answer.scenario.explanation
+                ),
+                "red_flags_ar": arabic_flags,
+                "red_flags_en": english_flags,
+                "category_ar": answer.scenario.category,
+                "category_en": (
+                    answer.scenario.category_en
+                    or answer.scenario.category
                 ),
             }
         )

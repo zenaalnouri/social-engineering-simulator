@@ -8,7 +8,7 @@ class SimulationApp {
     this.currentScenarioNumber = 1;
     this.userScore = 0;
     this.totalScenarios = 5;
-    this.pointsPerScenario = 2;
+    this.pointsPerScenario = 1;
     this.userName = '';
     this.userAnswers = [];
     this.isAnswered = false;
@@ -156,6 +156,7 @@ class SimulationApp {
         if (e.key === 'Enter' && !startBtn.disabled) {
           this.startSimulation(nameInput).catch(err => {
             console.error('Error starting simulation:', err);
+            this.hideLoading();
             this.showAlert('error.serverError', 'danger');
             startBtn.disabled = false;
           });
@@ -194,25 +195,20 @@ class SimulationApp {
 
     // Ask the backend for a fresh session + 5 random scenarios
     // (correct answers are never included in this response).
-    const { session_id, user_id, scenarios } = await API.startSimulation(name);
+    const response = await API.startSimulation(name);
 
     this.hideLoading();
 
-    // Save user name and score
+    // API owns the simulation session, user ID, language, and scenario pool.
     this.userName = name;
     this.userScore = 0;
     this.currentScenarioNumber = 1;
     this.userAnswers = [];
-    this.totalScenarios = scenarios.length || this.totalScenarios;
+    this.totalScenarios = response.scenarios.length || this.totalScenarios;
 
     sessionStorage.setItem('userName', name);
-    sessionStorage.setItem('sessionId', session_id || '');
-    sessionStorage.setItem('userId', user_id != null ? String(user_id) : '');
-    sessionStorage.setItem('userScore', '0');
-    sessionStorage.setItem('currentScenario', '1');
     sessionStorage.setItem('userAnswers', JSON.stringify([]));
-    sessionStorage.setItem('scenarioData', JSON.stringify(scenarios));
-    sessionStorage.setItem('simulationComplete', 'false');
+    sessionStorage.setItem('userScore', '0');
     
     // Redirect to scenario page
     window.location.href = './scenario.html';
@@ -226,9 +222,9 @@ class SimulationApp {
     this.userName = sessionStorage.getItem('userName') || 'User';
     this.userScore = parseInt(sessionStorage.getItem('userScore')) || 0;
     this.userAnswers = JSON.parse(sessionStorage.getItem('userAnswers') || '[]');
-    this.currentScenarioNumber = parseInt(sessionStorage.getItem('currentScenario')) || 1;
-    this.sessionId = sessionStorage.getItem('sessionId') || null;
-    this.userId = sessionStorage.getItem('userId') || null;
+    this.currentScenarioNumber = API.getCurrentScenarioNumber();
+    this.sessionId = API.getSessionId();
+    this.userId = API.getUserId();
 
     if (!this.ensureScenarioPool()) {
       // No valid scenario set for this session - send the user back to start.
@@ -250,7 +246,11 @@ class SimulationApp {
     this.userName = sessionStorage.getItem('userName') || 'User';
     this.userScore = parseInt(sessionStorage.getItem('userScore')) || 0;
     this.userAnswers = JSON.parse(sessionStorage.getItem('userAnswers') || '[]');
-    this.currentScenarioNumber = parseInt(sessionStorage.getItem('currentScenario')) || 1;
+    this.currentScenarioNumber = API.getCurrentScenarioNumber();
+    this.sessionId = API.getSessionId();
+    this.userId = API.getUserId();
+    const scenarioPool = API.getScenarioPool();
+    if (scenarioPool.length) this.totalScenarios = scenarioPool.length;
 
     this.preventBackNavigation();
     this.restrictNavToHome();
@@ -271,20 +271,43 @@ class SimulationApp {
     }
 
     const headerClass = feedbackData.isCorrect ? 'correct' : 'incorrect';
-    const titleText = feedbackData.isCorrect ? 'Great Job!' : 'Not Quite Right';
-    const subtitleText = feedbackData.isCorrect ? 'You correctly identified the threat' : "Let's learn from this scenario";
-    const categoryText = feedbackData.category || 'General Scam';
-    const shouldKnowText = feedbackData.shouldKnow || feedbackData.explanation || '';
-    const redFlags = Array.isArray(feedbackData.redFlags) ? feedbackData.redFlags : [];
+    const titleText = feedbackData.isCorrect
+      ? i18n.t('feedback.greatJob')
+      : i18n.t('feedback.notQuiteRight');
+    const subtitleText = feedbackData.isCorrect
+      ? i18n.t('feedback.correctThreat')
+      : i18n.t('feedback.learnScenario');
+    const currentLanguage = i18n.getCurrentLanguage();
+    const categoryText =
+      (currentLanguage === 'ar'
+        ? feedbackData.category_ar
+        : feedbackData.category_en)
+      || feedbackData.category
+      || i18n.t('feedback.generalScam');
+
+    const shouldKnowText =
+      (currentLanguage === 'ar'
+        ? feedbackData.explanation_ar
+        : feedbackData.explanation_en)
+      || feedbackData.shouldKnow
+      || feedbackData.explanation
+      || '';
+
+    const redFlags =
+      currentLanguage === 'ar'
+        ? (Array.isArray(feedbackData.red_flags_ar) ? feedbackData.red_flags_ar : [])
+        : (Array.isArray(feedbackData.red_flags_en) ? feedbackData.red_flags_en : []);
     const iconChar = feedbackData.isCorrect ? '✓' : '✕';
     const iconClass = feedbackData.isCorrect ? 'correct' : 'incorrect';
 
     const redFlagsHtml = redFlags.length
       ? `<ul class="feedback-list">${redFlags.map(flag => `<li>${flag}</li>`).join('')}</ul>`
-      : '<p>No red flags identified.</p>';
+      : `<p>${i18n.t('feedback.noRedFlags')}</p>`;
 
     const isLastScenario = this.currentScenarioNumber >= this.totalScenarios;
-    const nextButtonLabel = isLastScenario ? 'View Final Results' : 'Next Scenario';
+    const nextButtonLabel = isLastScenario
+      ? i18n.t('feedback.viewFinalResults')
+      : i18n.t('feedback.nextScenario');
 
     feedbackContainer.innerHTML = `
       <div class="feedback-hero ${headerClass}">
@@ -300,14 +323,14 @@ class SimulationApp {
       </div>
       <div class="feedback-board">
         <div class="feedback-note">
-          <h4>What You Should Know:</h4>
+          <h4>${i18n.t('feedback.whatYouShouldKnow')}</h4>
           <p>${shouldKnowText}</p>
         </div>
         <div class="feedback-section feedback-flags">
-          <h4>Red Flags Detected:</h4>
+          <h4>${i18n.t('feedback.redFlagsDetected')}</h4>
           ${redFlagsHtml}
         </div>
-        <p class="feedback-category">Category: ${categoryText}</p>
+        <p class="feedback-category">${i18n.t('feedback.category')}: ${categoryText}</p>
         <div class="feedback-actions">
           <button class="btn btn-primary btn-full" id="nextScenarioBtn">${nextButtonLabel}</button>
         </div>
@@ -319,7 +342,7 @@ class SimulationApp {
         this.goToResults();
       } else {
         const nextNumber = this.currentScenarioNumber + 1;
-        sessionStorage.setItem('currentScenario', nextNumber);
+        API.setCurrentScenario(nextNumber);
         window.location.href = './scenario.html';
       }
     });
@@ -333,7 +356,12 @@ class SimulationApp {
   async loadScenario() {
     try {
       this.showLoading();
-      this.currentScenario = this.scenarioData[this.currentScenarioNumber - 1];
+      this.currentScenario = API.getScenario(this.currentScenarioNumber - 1);
+
+      if (!this.currentScenario) {
+        throw new Error('Scenario was not found in the active simulation.');
+      }
+
       this.renderScenario();
       this.hideLoading();
     } catch (error) {
@@ -347,15 +375,9 @@ class SimulationApp {
    * Returns true if a valid set was found, false otherwise.
    */
   ensureScenarioPool() {
-    const dataJson = sessionStorage.getItem('scenarioData');
-    let scenarios = null;
-    try {
-      scenarios = dataJson ? JSON.parse(dataJson) : null;
-    } catch (error) {
-      scenarios = null;
-    }
+    const scenarios = API.getScenarioPool();
 
-    if (!Array.isArray(scenarios) || scenarios.length === 0) {
+    if (!Array.isArray(scenarios) || scenarios.length === 0 || !API.getSessionId()) {
       return false;
     }
 
@@ -363,6 +385,46 @@ class SimulationApp {
     return true;
   }
   
+  /**
+   * Convert backend scenario categories to the UI presentation types.
+   * The database uses categories such as "Phishing Email" and
+   * "Fake Login Page", while the UI uses email/website/etc.
+   */
+  getScenarioPresentationType(type) {
+    const value = String(type || '').toLowerCase();
+
+    if (value.includes('phishing') || value.includes('email')) {
+      return 'email';
+    }
+
+    if (value.includes('login') || value.includes('website')) {
+      return 'website';
+    }
+
+    if (value.includes('sms') || value.includes('text')) {
+      return 'sms';
+    }
+
+    if (value.includes('giveaway') || value.includes('prize') || value.includes('congrat')) {
+      return 'congrats';
+    }
+
+    if (
+      value.includes('social') ||
+      value.includes('whatsapp') ||
+      value.includes('telegram') ||
+      value.includes('manager') ||
+      value.includes('support') ||
+      value.includes('linkedin')
+    ) {
+      return value.includes('linkedin') ? 'linkedin' : 'social_media';
+    }
+
+    // Keep the existing generic card for categories without a
+    // dedicated presentation.
+    return 'email';
+  }
+
   /**
    * Render scenario on the page
    */
@@ -399,15 +461,19 @@ class SimulationApp {
         sms: '📱',
         social_media: '💬',
         linkedin: '💼',
-        website: '🌐'
+        website: '🌐',
+        congrats: '🎁'
       };
-      const scenarioIcon = typeIcons[this.currentScenario.type] || '💡';
-      const scenarioTypeLabel = i18n.t(`scenario.${this.currentScenario.type}`) || this.currentScenario.type;
+      const presentationType = this.getScenarioPresentationType(this.currentScenario.type);
+      const scenarioIcon = typeIcons[presentationType] || '💡';
+      const scenarioTypeLabel =
+        i18n.t(`scenario.${presentationType}`) || this.currentScenario.type;
 
-      const isCongratsCard = this.currentScenario.layout === 'congrats';
-      const isSocialCard = this.currentScenario.type === 'social_media';
-      const isWebsiteCard = this.currentScenario.type === 'website';
-      const isEmailCard = this.currentScenario.type === 'email';
+      const isCongratsCard =
+        presentationType === 'congrats' || this.currentScenario.layout === 'congrats';
+      const isSocialCard = presentationType === 'social_media';
+      const isWebsiteCard = presentationType === 'website';
+      const isEmailCard = presentationType === 'email';
       const headerLabel = isCongratsCard
         ? 'Congratulations!'
         : isEmailCard
@@ -459,7 +525,7 @@ class SimulationApp {
               <p class="website-footnote">By signing in, you agree to our Terms of Service</p>
             </div>
           </div>
-        ` : this.currentScenario.type === 'sms' ? `
+        ` : presentationType === 'sms' ? `
           <div class="scenario-card card mb-lg sms-card">
             <div class="scenario-card-top">
               <div class="scenario-card-label">
@@ -481,7 +547,7 @@ class SimulationApp {
               </div>
             </div>
           </div>
-        ` : this.currentScenario.type === 'linkedin' ? `
+        ` : presentationType === 'linkedin' ? `
           <div class="scenario-card card mb-lg linkedin-card">
             <div class="scenario-card-top">
               <div class="scenario-card-label">
@@ -630,13 +696,14 @@ class SimulationApp {
     try {
       // Submit answer to backend - the backend (not the frontend) is
       // the source of truth for whether this was correct.
-      const feedback = await API.submitAnswer(this.sessionId, this.currentScenario.id, answer.id);
+      const feedback = await API.submitAnswer(this.currentScenario.id, answer.id);
 
       const isCorrect = !!feedback.is_correct;
       
       // Update score
       if (isCorrect) {
-        this.userScore += this.pointsPerScenario;
+        // Keep the temporary display aligned with the backend: 1 point per correct answer.
+        this.userScore += 1;
         btnElement.classList.add('correct');
       } else {
         btnElement.classList.add('incorrect');
@@ -662,9 +729,15 @@ class SimulationApp {
         title: isCorrect ? 'Great Job!' : 'Not Quite Right',
         subtitle: isCorrect ? 'You correctly identified the threat' : "Let's learn from this scenario",
         explanation: feedback.explanation,
+        explanation_ar: feedback.explanation_ar,
+        explanation_en: feedback.explanation_en,
         shouldKnow: feedback.explanation,
         redFlags: feedback.red_flags || [],
+        red_flags_ar: feedback.red_flags_ar || [],
+        red_flags_en: feedback.red_flags_en || [],
         category: feedback.category || this.currentScenario.type,
+        category_ar: feedback.category_ar,
+        category_en: feedback.category_en,
         selectedAnswer: answer.text
       };
       sessionStorage.setItem('feedbackData', JSON.stringify(feedbackData));
@@ -739,7 +812,7 @@ class SimulationApp {
   nextScenario() {
     if (this.currentScenarioNumber < this.totalScenarios) {
       this.currentScenarioNumber++;
-      sessionStorage.setItem('currentScenario', this.currentScenarioNumber);
+      API.setCurrentScenario(this.currentScenarioNumber);
       this.isAnswered = false;
       this.loadScenario();
     }
@@ -749,23 +822,31 @@ class SimulationApp {
    * Go to results page
    */
   async goToResults() {
-    // Save final data
-    sessionStorage.setItem('simulationComplete', 'true');
-
-    // Persist the result to the backend (Results table) so it shows
-    // up in past results and the leaderboard.
-    const sessionId = sessionStorage.getItem('sessionId') || null;
-    const userId = sessionStorage.getItem('userId') || null;
-    try {
-      const finalResult = await API.finishSimulation(sessionId, userId ? parseInt(userId, 10) : null);
-      if (finalResult && finalResult.result_id) {
-        sessionStorage.setItem('backendResult', JSON.stringify(finalResult));
-      }
-    } catch (error) {
-      console.error('Error saving final result:', error);
+    if (!API.getSessionId()) {
+      this.showAlert('error.loadingError', 'danger');
+      return;
     }
 
-    window.location.href = './result.html';
+    try {
+      this.showLoading();
+
+      // Backend calculates and persists the final score.
+      const finalResult = await API.finishSimulation();
+
+      if (!finalResult) {
+        throw new Error('The server returned no final result.');
+      }
+
+      sessionStorage.setItem('backendResult', JSON.stringify(finalResult));
+      sessionStorage.setItem('simulationComplete', 'true');
+
+      this.hideLoading();
+      window.location.href = './result.html';
+    } catch (error) {
+      console.error('Error finishing simulation:', error);
+      this.hideLoading();
+      this.showAlert('error.serverError', 'danger');
+    }
   }
   
   /**
@@ -773,26 +854,39 @@ class SimulationApp {
    */
   initResultPage() {
     this.userName = sessionStorage.getItem('userName') || 'User';
-    this.userScore = parseInt(sessionStorage.getItem('userScore')) || 0;
     this.userAnswers = JSON.parse(sessionStorage.getItem('userAnswers') || '[]');
     this.backendResult = JSON.parse(sessionStorage.getItem('backendResult') || 'null');
-    if (this.backendResult) {
-      this.userScore = this.backendResult.score * this.pointsPerScenario;
-      this.totalScenarios = this.backendResult.total_questions || this.totalScenarios;
+
+    if (!this.backendResult) {
+      window.location.href = './simulation.html';
+      return;
     }
-    
+
+    // The backend is the source of truth for the final result.
+    this.userScore = Number(this.backendResult.score || 0);
+    this.totalScenarios = Number(
+      this.backendResult.total_questions || this.totalScenarios
+    );
+
     this.renderResults();
   }
-  
   /**
    * Render results
    */
   renderResults() {
-    const totalPoints = this.totalScenarios * this.pointsPerScenario;
-    const accuracy = (this.userScore / totalPoints) * 100;
+    const totalQuestions = Number(
+      this.backendResult?.total_questions || this.totalScenarios
+    );
+    const correctCount = Number(
+      this.backendResult?.correct_answers ?? this.userScore
+    );
+    const accuracy = Number(
+      this.backendResult?.percentage ?? (
+        totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0
+      )
+    );
     const awarenessLevel = this.getAwarenessLevel(accuracy);
     const awarenessClass = this.getAwarenessLevelClass(accuracy);
-    const correctCount = Math.round(this.userScore / this.pointsPerScenario);
     const scorePercentage = Number.isFinite(accuracy) ? accuracy.toFixed(0) : '0';
     
     const resultsContainer = document.getElementById('resultsContainer');
@@ -803,17 +897,17 @@ class SimulationApp {
         <div class="results-icon results-icon-emoji">
           <span class="emoji-silver" aria-hidden="true">🏆</span>
         </div>
-        <h1>Well Done, ${this.userName}</h1>
-        <p class="results-subtitle">You've completed the cybersecurity awareness simulation</p>
+        <h1>${i18n.t('result.wellDone', { name: this.userName })}</h1>
+        <p class="results-subtitle">${i18n.t('result.completed')}</p>
       </div>
       
       <div class="results-card card mb-2xl">
         <div class="results-score-circle">
-          <span class="score-main">${this.userScore}</span>
-          <span class="score-unit">/${totalPoints}</span>
+          <span class="score-main">${correctCount}</span>
+          <span class="score-unit">/${totalQuestions}</span>
         </div>
-        <h3>Your Score</h3>
-        <p>You correctly identified ${correctCount} out of ${this.totalScenarios} threats</p>
+        <h3>${i18n.t('result.title')}</h3>
+        <p>${i18n.t('result.correctlyIdentified', { count: correctCount, total: totalQuestions })}</p>
         <div class="grid grid-3 mt-2xl">
           <div class="stat-card score-box accuracy-box text-center">
             <span class="stat-value">${scorePercentage}%</span>
@@ -824,7 +918,7 @@ class SimulationApp {
             <p>${i18n.t('result.awareness')}</p>
           </div>
           <div class="stat-card score-box scenarios-box text-center">
-            <span class="stat-value">${this.totalScenarios}</span>
+            <span class="stat-value">${totalQuestions}</span>
             <p>${i18n.t('result.scenarios')}</p>
           </div>
         </div>
@@ -834,14 +928,14 @@ class SimulationApp {
         <div class="card result-summary-card">
           <div class="summary-title">
             <span class="summary-icon summary-icon-strengths">✓</span>
-            Strengths
+            ${i18n.t('result.strengths')}
           </div>
           <ul id="strengthsList" class="summary-list summary-list-strengths"></ul>
         </div>
         <div class="card result-summary-card">
           <div class="summary-title">
             <span class="summary-icon summary-icon-improve">↗</span>
-            Areas to Improve
+            ${i18n.t('result.improve')}
           </div>
           <ul id="improvementAreas" class="summary-list summary-list-improve"></ul>
         </div>
@@ -850,22 +944,22 @@ class SimulationApp {
       <div class="card recommendations-card mb-2xl">
         <div class="recommendations-title">
           <span class="icon-circle warning">!</span>
-          <h4>Security Recommendations</h4>
+          <h4>${i18n.t('result.securityRecommendations')}</h4>
         </div>
         <ol class="recommendations-list">
-          <li>Always verify sender email addresses carefully before clicking links.</li>
-          <li>Never share passwords or sensitive information through email or chat.</li>
-          <li>Use official company websites by typing URLs directly, not through links.</li>
-          <li>Enable two-factor authentication on all your important accounts.</li>
-          <li>When in doubt, contact the organization through official channels.</li>
+          <li>${i18n.t('result.recommendation1')}</li>
+          <li>${i18n.t('result.recommendation2')}</li>
+          <li>${i18n.t('result.recommendation3')}</li>
+          <li>${i18n.t('result.recommendation4')}</li>
+          <li>${i18n.t('result.recommendation5')}</li>
         </ol>
       </div>
       
       <div class="flex gap-md result-actions">
-        <button class="btn btn-dark" onclick="window.location.href='./simulation.html'">
+        <button class="btn btn-dark" id="restartSimulationBtn">
           ${i18n.t('result.restart')}
         </button>
-        <button class="btn btn-light" onclick="window.location.href='../index.html'">
+        <button class="btn btn-light" id="backHomeBtn">
           <span class="home-icon"></span>
           ${i18n.t('result.back')}
         </button>
@@ -879,22 +973,32 @@ class SimulationApp {
    * Get awareness level based on accuracy
    */
   getAwarenessLevel(accuracy) {
-    if (this.backendResult && this.backendResult.awareness_level) {
-      return this.backendResult.awareness_level;
-    }
-    if (accuracy >= 80) return i18n.t('result.expert');
-    if (accuracy >= 60) return i18n.t('result.advanced');
-    if (accuracy >= 40) return i18n.t('result.intermediate');
-    if (accuracy >= 20) return i18n.t('result.developing');
-    return i18n.t('result.beginner');
+    const backendLevel = this.backendResult?.awareness_level;
+
+    if (backendLevel === 'Expert') return i18n.t('result.expert');
+    if (backendLevel === 'Advanced') return i18n.t('result.advanced');
+    if (backendLevel === 'Intermediate') return i18n.t('result.intermediate');
+    if (backendLevel === 'Needs Improvement') return i18n.t('result.developing');
+
+    // Fallback for older/local result data.
+    if (accuracy >= 90) return i18n.t('result.expert');
+    if (accuracy >= 70) return i18n.t('result.advanced');
+    if (accuracy >= 50) return i18n.t('result.intermediate');
+    return i18n.t('result.developing');
   }
 
   getAwarenessLevelClass(accuracy) {
-    if (accuracy >= 80) return 'expert';
-    if (accuracy >= 60) return 'advanced';
-    if (accuracy >= 40) return 'intermediate';
-    if (accuracy >= 20) return 'developing';
-    return 'beginner';
+    const backendLevel = this.backendResult?.awareness_level;
+
+    if (backendLevel === 'Expert') return 'expert';
+    if (backendLevel === 'Advanced') return 'advanced';
+    if (backendLevel === 'Intermediate') return 'intermediate';
+    if (backendLevel === 'Needs Improvement') return 'developing';
+
+    if (accuracy >= 90) return 'expert';
+    if (accuracy >= 70) return 'advanced';
+    if (accuracy >= 50) return 'intermediate';
+    return 'developing';
   }
   
   /**
@@ -909,13 +1013,13 @@ class SimulationApp {
     if (strengthsList) {
       strengthsList.innerHTML = correctAnswers.length
         ? correctAnswers.map(answer => `<li>${answer.answer}</li>`).join('')
-        : '<li>Review each scenario carefully to identify scams.</li>';
+        : `<li>${i18n.t('result.reviewScenario')}</li>`;
     }
 
     if (improvementList) {
       improvementList.innerHTML = incorrectAnswers.length
         ? incorrectAnswers.map(answer => `<li>${answer.answer}</li>`).join('')
-        : '<li>Great job! No areas identified for improvement.</li>';
+        : `<li>${i18n.t('result.greatJobNoImprovement')}</li>`;
     }
   }
   
@@ -960,24 +1064,22 @@ class SimulationApp {
    * Clear simulation progress when leaving mid-session
    */
   clearSimulationProgress() {
-    sessionStorage.removeItem('scenarioData');
-    sessionStorage.removeItem('sessionId');
-    sessionStorage.removeItem('userId');
-    sessionStorage.removeItem('currentScenario');
+    API.clearSimulation();
+
+    sessionStorage.removeItem('userName');
     sessionStorage.removeItem('userScore');
     sessionStorage.removeItem('userAnswers');
     sessionStorage.removeItem('feedbackData');
     sessionStorage.removeItem('backendResult');
-    sessionStorage.removeItem('simulationComplete');
   }
 
   /**
    * Return true when a simulation session is in progress
    */
   isSimulationActive() {
-    const pool = sessionStorage.getItem('scenarioData');
+    const pool = API.getScenarioPool();
     const complete = sessionStorage.getItem('simulationComplete') === 'true';
-    return pool && !complete;
+    return Boolean(API.getSessionId() && pool.length && !complete);
   }
 
   /**

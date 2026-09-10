@@ -59,6 +59,21 @@ function renderScenarios(scenarios) {
   `).join('');
   document.querySelectorAll('.edit-scenario').forEach(button => button.addEventListener('click', editScenario));
   document.querySelectorAll('.delete-scenario').forEach(button => button.addEventListener('click', deleteScenario));
+  document.querySelectorAll('.toggle-scenario').forEach(button => button.addEventListener('click', toggleScenario));
+}
+
+async function toggleScenario(event) {
+  const id = event.currentTarget.dataset.id;
+  const isActive = event.currentTarget.dataset.active === 'true';
+  const action = isActive ? 'deactivate' : 'activate';
+
+  try {
+    await adminRequest(`/admin/scenarios/${id}/${action}`, 'POST');
+    await loadAdmin();
+    setAdminMessage(`Scenario ${isActive ? 'deactivated' : 'activated'}.`);
+  } catch (error) {
+    setAdminMessage(error.message, true);
+  }
 }
 
 function renderAlerts(alerts) {
