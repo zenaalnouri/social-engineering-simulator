@@ -29,8 +29,7 @@ def _database_uri():
     database_url = os.environ.get("DATABASE_URL")
     if database_url and database_url.startswith("postgres://"):
         return "postgresql://" + database_url[len("postgres://"):]
-    # تم التعديل ليقرأ بدقة من المجلد الرئيسي للمشروع مباشرة لضمان العثور عليه في بيئة السيرفر المرفوعة
-    return database_url or f"sqlite:///{os.path.join(BASEDIR, 'database.db')}"
+    return database_url or "sqlite:///database.db"
 
 
 class Config:
