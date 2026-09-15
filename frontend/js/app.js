@@ -42,9 +42,11 @@ class SimulationApp {
       link.addEventListener('click', (e) => this.handleNavigation(e));
     });
     
-    // Listen for language changes
-    window.addEventListener('languageChanged', () => {
-      this.updatePageLayout();
+    // Listen for language changes.
+    // The active simulation state is preserved; only the presentation
+    // language of the current page/scenario/feedback is refreshed.
+    window.addEventListener('languageChanged', async () => {
+      await this.updatePageLayout();
       this.loadHomeAlerts();
       this.loadAlertsPage();
     });
@@ -469,10 +471,17 @@ class SimulationApp {
     try {
       this.showLoading();
 
-      this.currentScenario =
-        await API.getScenario(
-          this.currentScenarioNumber - 1
+      const scenarioId =
+        API.getCurrentScenarioId();
+
+      if (!scenarioId) {
+        throw new Error(
+          'No scenario is assigned to the current position in the active simulation.'
         );
+      }
+
+      this.currentScenario =
+        await API.getScenario(scenarioId);
 
       if (!this.currentScenario) {
         throw new Error(

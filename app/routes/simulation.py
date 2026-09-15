@@ -63,6 +63,32 @@ class StartSimulationResource(Resource):
         return success_response(data=data, message="Simulation started", status_code=201)
 
 
+@ns.route("/scenario/<int:scenario_id>")
+class AssignedScenarioResource(Resource):
+    @ns.response(200, "Assigned scenario returned")
+    @ns.response(400, "Invalid attempt, scenario, or language")
+    @ns.response(404, "Attempt or scenario not found")
+    @ns.response(409, "Simulation attempt already finished")
+    def get(self, scenario_id):
+        """Return an already-assigned scenario in the requested language."""
+        attempt_id = request.args.get("attempt_id", type=int)
+        language = request.args.get("language", "en")
+
+        if attempt_id is None:
+            raise ValidationError("'attempt_id' must be an integer")
+
+        if language not in ("ar", "en"):
+            raise ValidationError("'language' must be 'ar' or 'en'")
+
+        scenario = simulation_service.get_assigned_scenario(
+            attempt_id, scenario_id, language
+        )
+        return success_response(
+            data=scenario,
+            message="Scenario returned",
+        )
+
+
 @ns.route("/answer")
 class SubmitAnswerResource(Resource):
     @ns.expect(answer_input_model)

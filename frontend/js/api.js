@@ -163,9 +163,42 @@ class APIManager {
     return this.getScenarioPool()[index] || null;
   }
 
-  // Get one of the five scenarios assigned to the active simulation.
-  getScenario(index) {
-    return this.getScenarioByIndex(index);
+  getCurrentScenarioId() {
+    const scenario =
+      this.getScenarioByIndex(
+        this.getCurrentScenarioNumber() - 1
+      );
+
+    return scenario && scenario.id
+      ? Number(scenario.id)
+      : null;
+  }
+
+  // Retrieve one of the five scenarios already assigned to the
+  // active simulation, localized to the current website language.
+  // The backend validates that the scenario belongs to this attempt.
+  async getScenario(scenarioId) {
+    const sessionId = this.getSessionId();
+
+    if (!sessionId) {
+      throw new Error('No active simulation session.');
+    }
+
+    if (!Number.isInteger(Number(scenarioId))) {
+      throw new Error('Invalid scenario ID.');
+    }
+
+    const language =
+      (typeof i18n !== 'undefined' &&
+       typeof i18n.getCurrentLanguage === 'function')
+        ? i18n.getCurrentLanguage()
+        : 'en';
+
+    const response = await this.get(
+      `/simulation/scenario/${Number(scenarioId)}?attempt_id=${Number(sessionId)}&language=${encodeURIComponent(language)}`
+    );
+
+    return response.data || null;
   }
 
   async submitAnswer(scenarioId, answerId) {

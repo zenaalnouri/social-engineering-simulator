@@ -50,6 +50,49 @@ def _get_attempt_or_404(attempt_id):
     return attempt
 
 
+def _build_scenario_payload(scenario, question, language):
+    """Build the localized, answer-safe payload for an assigned scenario."""
+    payload = scenario.to_dict(
+        include_stats=False, include_answer=False, language=language
+    )
+    payload["question"] = question.to_dict(include_answer=False)
+    options = payload["options"]
+    payload["answers"] = [
+        {"id": 1, "text": options["A"]},
+        {"id": 2, "text": options["B"]},
+        {"id": 3, "text": options["C"]},
+        {"id": 4, "text": options["D"]},
+    ]
+    return payload
+
+
+def get_assigned_scenario(attempt_id, scenario_id, language="en"):
+    """Return one already-assigned scenario in the requested language."""
+    attempt = _get_attempt_or_404(attempt_id)
+
+    if attempt.status == SimulationAttempt.STATUS_COMPLETED:
+        raise ConflictError(
+            "This simulation attempt has already been finished"
+        )
+
+    link = AttemptScenario.query.filter_by(
+        attempt_id=attempt_id, scenario_id=scenario_id
+    ).first()
+
+    if not link:
+        raise ValidationError(
+            "This scenario is not part of the given simulation attempt"
+        )
+
+    if not link.scenario:
+        raise NotFoundError("Scenario not found")
+
+    if not link.question:
+        raise NotFoundError("Question not found for this scenario")
+
+    return _build_scenario_payload(link.scenario, link.question, language)
+
+
 def start_simulation(user_id, language="ar"):
     """
     Randomly select SCENARIOS_PER_SIMULATION active scenarios (no
@@ -97,18 +140,9 @@ def start_simulation(user_id, language="ar"):
             )
         )
 
-        payload = scenario.to_dict(
-            include_stats=False, include_answer=False, language=language
+        scenario_payload.append(
+            _build_scenario_payload(scenario, question, language)
         )
-        payload["question"] = question.to_dict(include_answer=False)
-        options = payload["options"]
-        payload["answers"] = [
-            {"id": 1, "text": options["A"]},
-            {"id": 2, "text": options["B"]},
-            {"id": 3, "text": options["C"]},
-            {"id": 4, "text": options["D"]},
-        ]
-        scenario_payload.append(payload)
 
     db.session.commit()
     return attempt, scenario_payload
