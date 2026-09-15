@@ -166,7 +166,13 @@ class SimulationApp {
       startBtn.addEventListener('click', () => {
         this.startSimulation(nameInput).catch(err => {
           console.error('Error starting simulation:', err);
-          this.showAlert('error.serverError', 'danger');
+          this.hideLoading();
+          this.showAlert(
+            err && err.status === 409
+              ? 'validation.usernameTaken'
+              : 'error.serverError',
+            'danger'
+          );
           startBtn.disabled = false;
         });
       });
@@ -180,7 +186,12 @@ class SimulationApp {
           this.startSimulation(nameInput).catch(err => {
             console.error('Error starting simulation:', err);
             this.hideLoading();
-            this.showAlert('error.serverError', 'danger');
+            this.showAlert(
+              err && err.status === 409
+                ? 'validation.usernameTaken'
+                : 'error.serverError',
+              'danger'
+            );
             startBtn.disabled = false;
           });
         }

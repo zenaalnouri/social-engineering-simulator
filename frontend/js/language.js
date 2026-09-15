@@ -148,6 +148,7 @@ class LanguageManager {
         'validation.nameRequired': 'Please enter your name',
         'validation.nameTooShort': 'Name must be at least 2 characters',
         'validation.nameTooLong': 'Name must be less than 50 characters',
+        'validation.usernameTaken': 'This username is already taken',
         
         // Loading States
         'loading.loadingScenario': 'Loading scenario...',
@@ -237,6 +238,12 @@ class LanguageManager {
         'feedback.category': 'الفئة',
         'feedback.viewFinalResults': 'عرض النتيجة النهائية',
         'feedback.nextScenario': 'السيناريو التالي',
+        
+        // Validation Messages
+        'validation.nameRequired': 'يرجى إدخال اسمك',
+        'validation.nameTooShort': 'يجب أن يكون الاسم مكوّناً من حرفين على الأقل',
+        'validation.nameTooLong': 'يجب أن يكون الاسم أقل من 50 حرفاً',
+        'validation.usernameTaken': 'اسم المستخدم هذا مأخوذ بالفعل',
         
         // Results Page
         'result.title': 'نتيجتك',
